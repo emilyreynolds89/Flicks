@@ -20,7 +20,6 @@ public class Config {
 
         // get the poster size
         JSONArray posterSizeOptions = images.getJSONArray("poster_sizes");
-
         // use the option at index 3 or w342 as fallback
         posterSize = posterSizeOptions.optString(3, "w342");
 

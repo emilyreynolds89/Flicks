@@ -11,14 +11,13 @@ import com.google.android.youtube.player.YouTubePlayerView;
 public class MovieTrailerActivity extends YouTubeBaseActivity {
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_trailer);
 
-        // temporary test video id -- TODO replace with movie trailer id
-        final String videoId = "tKodtNFpzBA";
+        // video id
+        final String videoId = getIntent().getStringExtra("videoId");
 
         // resolve the player view from the layout
         YouTubePlayerView playerView = findViewById(R.id.player);

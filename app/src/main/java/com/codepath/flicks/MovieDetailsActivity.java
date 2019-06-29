@@ -1,7 +1,10 @@
 package com.codepath.flicks;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
@@ -29,6 +32,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
     TextView tvOverview;
     RatingBar rbVotingAverage;
     String videoId;
+    ImageView ivBackdropimage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,13 +43,13 @@ public class MovieDetailsActivity extends AppCompatActivity {
         tvtitle = findViewById(R.id.tvTitle);
         tvOverview = findViewById(R.id.tvOverview);
         rbVotingAverage = findViewById(R.id.rbVoteAverage);
-
-        // initialize client
-        client = new AsyncHttpClient();
+        ivBackdropimage = findViewById(R.id.ivBackdropimage);
 
         // unwrap the movie passed in via intent, using its simple name as a key
         movie = Parcels.unwrap(getIntent().getParcelableExtra(Movie.class.getSimpleName()));
         Log.d("MovieDetailsActivity", String.format("Showing details for '%s'", movie.getTitle()));
+
+        getTrailerKey(movie);
 
         // set the title and overview
         tvtitle.setText(movie.getTitle());
@@ -55,7 +59,21 @@ public class MovieDetailsActivity extends AppCompatActivity {
         float voteAverage = movie.getVoteAverage().floatValue();
         rbVotingAverage.setRating(voteAverage = (voteAverage > 0 ? voteAverage / 2.0f : voteAverage));
 
-        getTrailerKey(movie);
+
+        ivBackdropimage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (videoId != null) {
+                    // create intent for the new activity
+                    Intent intent = new Intent(view.getContext(), MovieTrailerActivity.class);
+
+                    intent.putExtra("videoId", videoId);
+
+                    // show the activity
+                    view.getContext().startActivity(intent);
+                }
+            }
+        });
     }
 
     // CONSTANTS
@@ -63,9 +81,6 @@ public class MovieDetailsActivity extends AppCompatActivity {
     public final static String API_BASE_URL = "https://api.themoviedb.org/3";
     // param name for API key
     public final static String API_KEY_PARAM = "api_key";
-
-    // instance fields
-    AsyncHttpClient client;
 
     // get the trailer by calling the API
     private void getTrailerKey(Movie movie) {
@@ -75,6 +90,9 @@ public class MovieDetailsActivity extends AppCompatActivity {
         // set the request params
         RequestParams params = new RequestParams();
         params.put(API_KEY_PARAM, getString(R.string.api_key)); // API key always required
+
+        // initialize client
+        AsyncHttpClient client = new AsyncHttpClient();
 
         // execute GET request expecting a json object response
         client.get(url, params, new JsonHttpResponseHandler() {
@@ -102,4 +120,6 @@ public class MovieDetailsActivity extends AppCompatActivity {
             }
         });
     }
+
+
 }
